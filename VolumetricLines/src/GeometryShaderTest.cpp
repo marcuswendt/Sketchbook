@@ -27,6 +27,7 @@ public:
 private:
     gl::GlslProg shader;
     Vec2f mouse;
+    float t;
 };
 
 
@@ -39,11 +40,12 @@ void GeometryShaderTest::prepareSettings(Settings *settings)
 void GeometryShaderTest::setup()
 {
     try {
-        shader = fieldkit::gl::loadShaderSet(loadResource("geoshader_test.glsl"), GL_LINES, GL_LINE_STRIP, 100);
+        shader = fieldkit::gl::loadShaderSet(loadResource("geoshader_test.glsl"), GL_LINES, GL_LINE_STRIP, 1024);
     } catch(exception& e) {
         printf("Error: %s", e.what());
     }
     
+    t = 0;
     mouse = getWindowSize() * 0.5;
 }
 
@@ -58,14 +60,35 @@ void GeometryShaderTest::draw()
 	gl::clear(Color(0,0,0));
 
     gl::color(Color(1,1,1));
-    glLineWidth(4.0);
-//    glPointSize(15.0);
+    
     shader.bind();
+    
+    glLineWidth(2.0);
     glBegin(GL_LINES);
         glVertex2f(mouse.x, mouse.y);
-        glVertex2f(mouse.x + 100, mouse.y);
+        glVertex2f(mouse.x + 100, mouse.y);    
     glEnd();
+
+    t += 0.1;
+    glLineWidth(0.5);
+    glBegin(GL_LINES);
+    int numLines = 10000;
+    for(int i=0; i<numLines; i++) {
+        float w = getWindowWidth() / (float)numLines;
+        float h = getWindowHeight() / (float)numLines;
+        
+        float x = t + i * w;
+        float y = getWindowHeight() / 2.0;
+        y += (i % 2 == 0) ? 100 : -100;
+        
+        glVertex2f(x, y);
+        glVertex2f(x, y + 50);
+    }
+    glEnd();
+
     shader.unbind();
+    
+    printf("FPS %f\n", getAverageFps());
 }
 
 
