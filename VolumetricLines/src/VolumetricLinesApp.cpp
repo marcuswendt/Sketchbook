@@ -2,6 +2,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/Camera.h"
 
 #include "Resources.h"
 #include "ShaderSet.h"
@@ -15,10 +16,10 @@ public:
     LinePath() {}
     ~LinePath() {}
     
-    void loadShader(DataSourcePathRef file);
+    void initShader(DataSourcePathRef file);
     int length() { return vertices.size(); }  
     void insert(Vec3f point);    
-    void draw();
+    void draw(Camera const& cam);
     
     std::vector<Vec3f> vertices;
     std::vector<Vec3f> normals;
@@ -27,22 +28,19 @@ public:
     gl::GlslProg shader;
 };
 
-void LinePath::loadShader(DataSourcePathRef file)
+void LinePath::initShader(DataSourcePathRef file)
 {    
     try {
-        shader = fieldkit::gl::loadShaderSet(file);   
+        // works
+//        shader = fieldkit::gl::loadShaderSet(file, 
+//                                             "test.vs", "test.fs",
+//                                             "test.gs", 
+//                                             GL_LINES_ADJACENCY_EXT, GL_TRIANGLE_STRIP, 24);
         
-//        // init geometry shader
-//        GLuint handle = shader.getHandle();
-//        glProgramParameteriEXT(handle, GL_GEOMETRY_INPUT_TYPE_EXT, GL_LINES_ADJACENCY_EXT);
-//        glProgramParameteriEXT(handle, GL_GEOMETRY_OUTPUT_TYPE_EXT, GL_TRIANGLE_STRIP);
-//        glProgramParameteriEXT(handle, GL_GEOMETRY_VERTICES_OUT_EXT, 24);
-        
-        // set basic uniforms
-        shader.uniform("Radius", 10.0f);
-        shader.uniform("Modelview", gl::getModelView());
-        shader.uniform("Projection", gl::getProjection());
-        shader.uniform("ModelviewProjection", gl::getModelView());
+        shader = fieldkit::gl::loadShaderSet(file, 
+                                             "VolumetricLine.vs", "test.fs",
+                                             "test2.gs", 
+                                             GL_LINES_ADJACENCY_EXT, GL_TRIANGLE_STRIP, 24);
         
     } catch(exception& e) {
         printf("Error: %s", e.what());
@@ -67,8 +65,19 @@ void LinePath::insert(Vec3f point)
     }
 }
 
-void LinePath::draw()
+void LinePath::draw(Camera const& cam)
 {
+    // Update camera
+    Matrix44f proj = cam.getProjectionMatrix();
+    Matrix44f modelView = gl::getModelView();
+    Matrix44f modelViewProj = cam.getProjectionMatrix() * modelView;
+    
+    shader.uniform("Radius", 10.0f);
+    shader.uniform("ModelView", modelView);
+    shader.uniform("Projection", proj);
+    shader.uniform("ModelViewProjection", modelViewProj);
+    
+    
     // OpenGL 4.0 style drawing
     int position = 0;
     int normal = 1;
@@ -80,7 +89,8 @@ void LinePath::draw()
     const GLvoid* positionOffset = static_cast<GLvoid*>(&vertices[0]);
     const GLvoid* normalOffset = static_cast<GLvoid*>(&normals[0]);
     const GLvoid* pathCoordOffset = static_cast<GLvoid*>(&coords[0]);
-    
+ 
+    shader.bind();
     glEnableVertexAttribArray(position);
     glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, stride, positionOffset);
     
@@ -90,13 +100,13 @@ void LinePath::draw()
     glEnableVertexAttribArray(pathCoord);
     glVertexAttribPointer(pathCoord, 1, GL_FLOAT, GL_FALSE, stride, pathCoordOffset);
  
-    shader.bind();
+//    glDrawArrays(GL_LINES_ADJACENCY_EXT, 0, length());    
     glDrawArrays(GL_LINE_STRIP_ADJACENCY_EXT, 0, length());
-    shader.unbind();
     
     glDisableVertexAttribArray(position);
     glDisableVertexAttribArray(normal);
     glDisableVertexAttribArray(pathCoord);
+    shader.unbind();
     
     // OpenGL 2.0 style drawing
 //    shader.bind();
@@ -120,6 +130,7 @@ public:
     
 private:
     LinePath path;
+    CameraPersp cam;
 };
 
 
@@ -131,7 +142,12 @@ void VolumetricLinesApp::prepareSettings(Settings *settings)
 
 void VolumetricLinesApp::setup()
 {
-    path.loadShader(loadResource(RES_VOLUMETRIC_LINE));
+    Vec2f center = getWindowSize() * 0.5f;
+    
+    cam.lookAt( Vec3f( center.x, center.y, 650), Vec3f(center.x, center.y, 0) );
+	cam.setPerspective( 60, getWindowAspectRatio(), 1, 5000 );
+    
+    path.initShader(loadResource(RES_VOLUMETRIC_LINE));
 }
 
 void VolumetricLinesApp::update()
@@ -147,10 +163,17 @@ void VolumetricLinesApp::draw()
 {
 	gl::clear(Color(0,0,0));
     
+    gl::setMatrices(cam);
+    
     gl::color(Color(1,1,1));
-    glLineWidth(10.0);
 
-    path.draw();
+    Vec2f center = getWindowSize() * 0.5f;
+    float w = 25;
+    float h = 25;
+    gl::drawSolidRect(Rectf(center.x-w, center.y-h, center.x+w, center.y+h));
+    
+    glLineWidth(10.0);
+    path.draw(cam);
 }
 
 

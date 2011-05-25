@@ -40,7 +40,7 @@ void GeometryShaderTest::prepareSettings(Settings *settings)
 void GeometryShaderTest::setup()
 {
     try {
-        shader = fieldkit::gl::loadShaderSet(loadResource("geoshader_test.glsl"), GL_LINES, GL_LINE_STRIP, 1024);
+        shader = fieldkit::gl::loadShaderSet(loadResource("geoshader_test.glsl"), "VS", "GS", "FS", GL_LINES, GL_LINE_STRIP, 1024);
     } catch(exception& e) {
         printf("Error: %s", e.what());
     }
