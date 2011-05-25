@@ -12,8 +12,12 @@
 #include "cinder/gl/GlslProg.h"
 
 namespace fieldkit { namespace gl {
-   
-    ci::gl::GlslProg loadShaderSet(ci::DataSourceRef source, 
+
+
+    ci::gl::GlslProg loadShaderSet(ci::DataSourceRef source,
+                                   std::string vertexShaderName,
+                                   std::string fragmentShaderName,
+                                   std::string geometryShaderName = "",
                                    GLint geometryInputType = GL_POINTS, 
                                    GLint geometryOutputType = GL_TRIANGLES, 
                                    GLint geometryOutputVertices = 0);

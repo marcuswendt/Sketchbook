@@ -43,7 +43,7 @@ namespace fieldkit { namespace gl {
         vector<string> splitted;
         
         split(str, del, insert_iterator<vector<string> >(splitted, splitted.begin()));
-        
+        \
         vector<string>::iterator it = splitted.begin();
         ++it; // skip header
         
@@ -59,36 +59,54 @@ namespace fieldkit { namespace gl {
     }
     
     
-    ci::gl::GlslProg loadShaderSet(ci::DataSourceRef source,  GLint geometryInputType, GLint geometryOutputType, GLint geometryOutputVertices)
+    ci::gl::GlslProg loadShaderSet(ci::DataSourceRef source,
+                                   std::string vertexShaderName,
+                                   std::string fragmentShaderName,
+                                   std::string geometryShaderName,
+                                   GLint geometryInputType, 
+                                   GLint geometryOutputType, 
+                                   GLint geometryOutputVertices)
     {
         using namespace std;
         using ci::gl::GlslProg;
         
         map<string, string> sources = splitShaderSource(source);
         map<string, string>::iterator it = sources.begin();
-        
-        int numShaders = sources.size();
 
-        if(numShaders == 1) {
-            const char* vs = (*it).second.c_str();
-            return GlslProg(vs);
+        // vertex + fragment shader program
+        if(geometryShaderName == "") {
+            return GlslProg(sources[vertexShaderName].c_str(), sources[fragmentShaderName].c_str());
 
-        } else if(numShaders == 2) {
-            const char* fs = (*it).second.c_str(); ++it;
-            const char* vs = (*it).second.c_str();
-            return GlslProg(vs, fs);
-
-        } else if(numShaders == 3) {
-            const char* fs = (*it).second.c_str(); ++it;
-            const char* gs = (*it).second.c_str(); ++it;
-            const char* vs = (*it).second.c_str();
-            
-//            printf("VS = '%s'\n", vs);
-//            printf("GS = '%s'\n", gs);
-//            printf("FS = '%s'\n", fs);
-            
-            return GlslProg(vs, fs, gs, geometryInputType, geometryOutputType, geometryOutputVertices);
+        // vertex + geometry + fragment shader program
+        } else {
+            return GlslProg(sources[vertexShaderName].c_str(), 
+                            sources[fragmentShaderName].c_str(),
+                            sources[geometryShaderName].c_str(),
+                            geometryInputType, geometryOutputType, geometryOutputVertices);            
         }
+        
+//        int numShaders = sources.size();
+//
+//        if(numShaders == 1) {
+//            const char* vs = (*it).second.c_str();
+//            return GlslProg(vs);
+//
+//        } else if(numShaders == 2) {
+//            const char* fs = (*it).second.c_str(); ++it;
+//            const char* vs = (*it).second.c_str();
+//            return GlslProg(vs, fs);
+//
+//        } else if(numShaders == 3) {
+//            const char* fs = (*it).second.c_str(); ++it;
+//            const char* gs = (*it).second.c_str(); ++it;
+//            const char* vs = (*it).second.c_str();
+//            
+////            printf("VS = '%s'\n", vs);
+////            printf("GS = '%s'\n", gs);
+////            printf("FS = '%s'\n", fs);
+//            
+//            return GlslProg(vs, fs, gs, geometryInputType, geometryOutputType, geometryOutputVertices);
+//        }
         
         return GlslProg();
     }
