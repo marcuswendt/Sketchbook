@@ -42,3 +42,28 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
+
+
+
+/* HTML */
+body {
+	background-color: rgb(0.2, 0.2, 0.2);
+}
+
+/* IDs */
+#ui {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 1;
+	border: 1px solid red;
+}
+
+#canvas {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	z-index: 0;
+	border: 1px solid red;
+}

@@ -1,16 +1,25 @@
 define [
   'cs!util',
+  'lib/dat.gui', 'lib/dat.color',
   'lib/Three', 'lib/ThreeWebGL',
   'lib/RequestAnimationFrame',
-], (util, three) ->
+  'lib/Detector'
+], (util, gui) ->
 	log = util.log
+	err = util.err
+
+	if(!Detector.webgl) 
+		Detector.addGetWebGLMessage
+		err 'VOXEL: Couldnt initialize WebGL'
+		return
 
 	log 'main'
 	[camera, scene, renderer, geometry, material, mesh] = [null]
 
-	init = ->
+	init = (containerId) ->
 		log 'creating scene'
-		scene = new THREE.Scene()
+
+		scene = new THREE.Scene
 
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000)
 		camera.position.z = 1000
@@ -22,10 +31,12 @@ define [
 		mesh = new THREE.Mesh(geometry, material)
 		scene.add(mesh)
 
-		renderer = new THREE.CanvasRenderer()
+		# renderer = new THREE.CanvasRenderer
+		renderer = new THREE.WebGLRenderer( {antialias: false} )
 		renderer.setSize(window.innerWidth, window.innerHeight)
 
-		document.body.appendChild(renderer.domElement)
+		#document.body.appendChild(renderer.domElement)
+		document.getElementById(containerId).appendChild(renderer.domElement)
 
 	render = ->
 		# log 'render'
@@ -38,5 +49,5 @@ define [
 		requestAnimationFrame(animate)
 		render()
 
-	init()
+	init('canvas')
 	animate()

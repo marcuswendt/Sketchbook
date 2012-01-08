@@ -9,15 +9,5 @@ task 'run', 'run the webserver', ->
 		console.log(stdout)
 		console.error(stderr)
 
-	exec 'cd src; coffee -p ../lib/serve.coffee | node', out
-	# server = spawn('coffee -p lib/serve.coffee | node', [])
-
-	# server.stdout.on 'data', (data) ->
-	# 	log('stdout '+ data)
-	
-	
-	# server.stderr.on('data' (data) ->
-	# 	log('stderr '+ data)
-	# )
-
+	exec 'cd src; coffee ../lib/serve.coffee', out
 	exec 'open http://127.0.0.1:8000/'
