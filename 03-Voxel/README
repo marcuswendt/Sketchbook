@@ -1,0 +1,22 @@
+
+VOXEL
+08-01-2012
+
+sample project setup for a modern web/ JavaScript based creative code sketch
+combines: Node.JS, CoffeeScript, require.js, THREE.js, FieldKit.js, WebGL, HTML5
+
+
+
+PREREQUESITES
+
+macport packages:
+$ sudo port install nodejs
+$ sudo port install npm
+
+nodejs packages:
+$ npm install -g coffee-script
+
+
+RUNNING
+
+$ cake run
