@@ -6,6 +6,6 @@
 #   render: (body) ->
 #     body.appendChild util.toDom('<b>This is a rendered view</b>')
 
-define
-	test: (str) ->
-		console.log('test: '+ str)
+define 
+	log: (str) -> console.log(str)
+	err: (str) -> console.error(str)
