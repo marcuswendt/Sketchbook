@@ -10,7 +10,7 @@ define [
 
 	if(!Detector.webgl) 
 		Detector.addGetWebGLMessage
-		err 'VOXEL: Couldnt initialize WebGL'
+		err 'BASIC WEBGL TEMPLATE: Couldnt initialize WebGL'
 		return
 
 	log 'main'
