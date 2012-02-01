@@ -1,0 +1,22 @@
+# fs = require 'fs'
+{spawn, exec} = require 'child_process'
+{log} = require 'util'
+
+task 'run', 'run the webserver', ->
+
+	log 'stopping existing servers'
+	# exec 'killall -9 node'
+
+	log 'launching server...'
+
+	puts = (error, stdout, stderr) ->
+		util.puts(stdout)
+
+	server = spawn 'coffee', ['app.coffee'], {cwd: 'src/'}
+
+	server.stdout.on('data', (data) -> log data)
+	server.stderr.on('data', (data) -> log data)
+	server.on('exit', (code) -> log 'exit: '+ code)
+
+	
+	exec 'open http://127.0.0.1:3000/'

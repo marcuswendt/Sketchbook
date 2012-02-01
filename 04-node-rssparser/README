@@ -1,0 +1,20 @@
+
+NODEJS RSS PARSER TEST
+14-01-2012
+
+test project for a modern javascript based web service stack combining CoffeeScript, Node.JS, express, mongoDB + jade, stylus
+
+
+PREREQUESITES
+
+macport packages:
+$ sudo port install nodejs
+$ sudo port install npm
+
+nodejs packages:
+$ npm install -g coffee-script
+
+
+RUNNING
+
+$ cake run
