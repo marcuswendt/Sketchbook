@@ -1,0 +1,64 @@
+/*                                                                           
+ *      _____  __  _____  __     ____                                   
+ *     / ___/ / / /____/ / /    /    \   WorkerTest
+ *    / ___/ /_/ /____/ / /__  /  /  /   (c) 2012, FIELD. All rights reserved.              
+ *   /_/        /____/ /____/ /_____/    http://www.field.io           
+ *   
+ *	 Created by Marcus Wendt on 25/01/2011.
+ */
+
+// OSX
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
+
+// STD
+#include <vector>
+#include <string>
+#include <stdexcept>
+using namespace std;
+
+// BOOST
+#include <boost/foreach.hpp>
+
+// FIELDKIT
+#include "fieldkit/FieldKit.h"
+#include "fieldkit/Logger.h"
+#include "fieldkit/math/MathKit.h"
+using namespace fk;
+
+#ifndef FIELD_CONSTANTS
+#define FIELD_CONSTANTS
+
+
+// -- SERVER -------------------------------------------------------------------
+static const int kWorldGridWalls = 6;
+static const int kWorldGridWidth = 40;
+static const int kWorldGridHeight = 24;
+
+static const int kWorldGridSize = kWorldGridWalls * kWorldGridWidth * kWorldGridHeight;
+
+static const Vec2i kWorldGridDimension = Vec2i(kWorldGridWalls * kWorldGridWidth, kWorldGridHeight);
+
+static const std::string kAudioDeviceName = "Soundflower (2ch)";
+
+static const int kAudioFFTNumBands = 705; // 512 at 44.1khz
+static const int kAudioFFTNumBins = 85;
+static const float kAudioBinStartFreq = 40.0 / 48000.0;
+static const float kAudioBinScale = 1.08;
+
+// NETWORK
+static const int kNetworkPort = 3000;
+
+
+// -- CLIENT -------------------------------------------------------------------
+
+//! virtual size of a single cell
+static const Vec2f kCellVSize = Vec2f(1.0f, 1.0f);
+static const Vec2f kCellHalfVSize = Vec2f(0.5f, 0.5f);
+
+static const float kMaxJoints = 50;
+static const float kMaxCreatures = kWorldGridWidth * kWorldGridHeight;
+
+
+#endif

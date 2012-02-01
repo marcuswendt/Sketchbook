@@ -1,0 +1,23 @@
+<!--
+
+	Settings for the WorkerTest client application
+
+-->
+<client>
+
+	<!-- Display -->
+    <display>0</display>
+	<framerate>120</framerate>
+	<fullscreen>0</fullscreen>
+    <chromeless>0</chromeless>
+	<window>1280,768</window> 
+	<position>0,0</position> <!-- set to -1,-1 to center the window -->
+    <debug>1</debug>
+    
+    <aasamples>8</aasamples>
+    <samples>1</samples>
+        	
+    <!--
+    <script>/Users/marcus/Documents/Development/056-lagaitelyrique/PetiteSalle/src/client/simulation/js/WorkerTest.js</script>
+     -->
+</client>
