@@ -1,0 +1,24 @@
+info it worked if it ends with ok
+verbose cli [ 'node', '/opt/local/bin/npm', 'remove', '-g', 'calipso' ]
+info using npm@1.1.22
+info using node@v0.6.18
+verbose config file /Users/marcus/.npmrc
+verbose config file /opt/local/etc/npmrc
+verbose config file /opt/local/lib/node_modules/npm/npmrc
+info unbuild /opt/local/lib/node_modules/calipso
+ERR! Error: ENOTEMPTY, rmdir '/opt/local/lib/node_modules/calipso/node_modules/zipfile/deps/libzip-0.10/lib/.libs'
+ERR! You may report this log at:
+ERR!     <http://github.com/isaacs/npm/issues>
+ERR! or email it to:
+ERR!     <npm-@googlegroups.com>
+ERR! 
+ERR! System Darwin 11.4.0
+ERR! command "node" "/opt/local/bin/npm" "remove" "-g" "calipso"
+ERR! cwd /Users/marcus/Documents/Development/Sketchbook
+ERR! node -v v0.6.18
+ERR! npm -v 1.1.22
+ERR! path /opt/local/lib/node_modules/calipso/node_modules/zipfile/deps/libzip-0.10/lib/.libs
+ERR! code ENOTEMPTY
+ERR! message ENOTEMPTY, rmdir '/opt/local/lib/node_modules/calipso/node_modules/zipfile/deps/libzip-0.10/lib/.libs'
+ERR! errno {}
+verbose exit [ 1, true ]
