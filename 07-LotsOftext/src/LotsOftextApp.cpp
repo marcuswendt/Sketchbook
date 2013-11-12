@@ -42,8 +42,8 @@ void LotsOftextApp::prepareSettings(Settings *settings)
 
 void LotsOftextApp::setup()
 {
-    int cols = 30;
-    int rows = 90;
+    int cols = 30 / 3;
+    int rows = 90 / 3;
     float gutter = 2;
     float lineSpacing = 1;
     

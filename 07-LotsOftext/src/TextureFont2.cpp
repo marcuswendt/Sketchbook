@@ -294,35 +294,39 @@ TextureFont2::TextureFont2( const Font &font, const string &utf8Chars, const For
     
 void TextureFont2::beginDraw()
 {
-//	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
-//	BoolState saveEnabledState( mTextures[0].getTarget() );
-//	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-//	ClientBoolState colorArrayState( GL_COLOR_ARRAY );
-//	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );
-	gl::enable( mTextures[0].getTarget() );
+//	gl::enable( mTextures[0].getTarget() );
     
-    glEnableClientState( GL_VERTEX_ARRAY );
+//    glEnableClientState( GL_VERTEX_ARRAY );
 //	if ( colors.empty() )
-		glDisableClientState( GL_COLOR_ARRAY );
+//		glDisableClientState( GL_COLOR_ARRAY );
 //	else
 //		glEnableClientState( GL_COLOR_ARRAY );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+//	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
     
     curIdx = 0;
 }
 
 void TextureFont2::endDraw()
 {
+    glEnableClientState( GL_VERTEX_ARRAY );
+    
     glVertexPointer( 2, GL_FLOAT, 0, &verts[0] );
-    glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
+//    glTexCoordPointer( 2, GL_FLOAT, 0, &texCoords[0] );
+    
 //    if( ! colors.empty() )
 //        glColorPointer( 4, GL_UNSIGNED_BYTE, 0, &vertColors[0] );
-    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0] );
+//    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, &indices[0] );
 
+    glEnable(GL_POINT_SMOOTH);
+    glPointSize(1.0);
+    glDrawArrays(GL_POINTS, 0, verts.size() / 2);
+
+//    ci::app::console() << "data verts: " << verts.size() << " coords " << texCoords.size() << " indices " << indices.size() << std::endl;
+    
     verts.clear();
-    texCoords.clear();
-    vertColors.clear();
-    indices.clear();
+//    texCoords.clear();
+//    vertColors.clear();
+//    indices.clear();
 }
 
 
@@ -336,35 +340,12 @@ void TextureFont2::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasure
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
-//	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
-//	BoolState saveEnabledState( mTextures[0].getTarget() );
-//	ClientBoolState vertexArrayState( GL_VERTEX_ARRAY );
-//	ClientBoolState colorArrayState( GL_COLOR_ARRAY );
-//	ClientBoolState texCoordArrayState( GL_TEXTURE_COORD_ARRAY );	
-//	gl::enable( mTextures[0].getTarget() );
-
 	Vec2f baseline = baselineIn;
 
-//	glEnableClientState( GL_VERTEX_ARRAY );
-//	if ( colors.empty() )
-//		glDisableClientState( GL_COLOR_ARRAY );
-//	else
-//		glEnableClientState( GL_COLOR_ARRAY );
-//	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	const float scale = options.getScale();
 	for( size_t texIdx = 0; texIdx < mTextures.size(); ++texIdx ) {
-//		vector<float> verts, texCoords;
-//		vector<ColorA8u> vertColors;
 		const gl::Texture &curTex = mTextures[texIdx];
-#if defined( CINDER_GLES )
-		vector<uint16_t> indices;
-		uint16_t curIdx = 0;
-		GLenum indexType = GL_UNSIGNED_SHORT;
-#else
-//		vector<uint32_t> indices;
-//		uint32_t curIdx = 0;
-//		GLenum indexType = GL_UNSIGNED_INT;
-#endif
+        
 		if( options.getPixelSnap() )
 			baseline = Vec2f( floor( baseline.x ), floor( baseline.y ) );
 			
@@ -376,7 +357,8 @@ void TextureFont2::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasure
 			const GlyphInfo &glyphInfo = glyphInfoIt->second;
 			
 			Rectf destRect( glyphInfo.mTexCoords );
-			Rectf srcCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+//			Rectf srcCoords = curTex.getAreaTexCoords( glyphInfo.mTexCoords );
+            
 			destRect -= destRect.getUpperLeft();
 			destRect.scale( scale );
 			destRect += glyphIt->second * scale;
@@ -384,24 +366,27 @@ void TextureFont2::drawGlyphs( const vector<pair<uint16_t,Vec2f> > &glyphMeasure
 			destRect += Vec2f( baseline.x, baseline.y - mFont.getAscent() * scale );
 			if( options.getPixelSnap() )
 				destRect -= Vec2f( destRect.x1 - floor( destRect.x1 ), destRect.y1 - floor( destRect.y1 ) );				
-			
-			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
-			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
-			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY2() );
-			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY2() );
 
-			texCoords.push_back( srcCoords.getX2() ); texCoords.push_back( srcCoords.getY1() );
-			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY1() );
-			texCoords.push_back( srcCoords.getX2() ); texCoords.push_back( srcCoords.getY2() );
-			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY2() );
-			
-			if( ! colors.empty() ) {
-				for( int i = 0; i < 4; ++i )
-					vertColors.push_back( colors[glyphIt-glyphMeasures.begin()] );
-			}
+            Vec2f center = destRect.getCenter();
+            verts.push_back(center.x); verts.push_back(center.y);
+            
+//			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY1() );
+//			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY1() );
+//			verts.push_back( destRect.getX2() ); verts.push_back( destRect.getY2() );
+//			verts.push_back( destRect.getX1() ); verts.push_back( destRect.getY2() );
 
-			indices.push_back( curIdx + 0 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 2 );
-			indices.push_back( curIdx + 2 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 3 );
+//			texCoords.push_back( srcCoords.getX2() ); texCoords.push_back( srcCoords.getY1() );
+//			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY1() );
+//			texCoords.push_back( srcCoords.getX2() ); texCoords.push_back( srcCoords.getY2() );
+//			texCoords.push_back( srcCoords.getX1() ); texCoords.push_back( srcCoords.getY2() );
+//			
+//			if( ! colors.empty() ) {
+//				for( int i = 0; i < 4; ++i )
+//					vertColors.push_back( colors[glyphIt-glyphMeasures.begin()] );
+//			}
+//
+//			indices.push_back( curIdx + 0 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 2 );
+//			indices.push_back( curIdx + 2 ); indices.push_back( curIdx + 1 ); indices.push_back( curIdx + 3 );
 			curIdx += 4;
 		}
 		
@@ -426,7 +411,7 @@ void TextureFont2::drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &gl
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
-    ci::app::console() << "drawGlyphs2 " << std::endl;
+//    ci::app::console() << "drawGlyphs2 " << std::endl;
     
 	SaveTextureBindState saveBindState( mTextures[0].getTarget() );
 	BoolState saveEnabledState( mTextures[0].getTarget() );
